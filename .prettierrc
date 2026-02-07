@@ -1,0 +1,9 @@
+{
+    "plugins": ["prettier-plugin-blade"],
+    "pluginSearchDirs": false,
+    "tabWidth": 4,
+    "useTabs": false,
+    "singleQuote": false,
+    "printWidth": 120,
+    "semi": true
+}

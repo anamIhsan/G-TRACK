@@ -1,0 +1,42 @@
+{
+    "name": "system-absensi-2025",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "sort": "npx prettier --write resources"
+    },
+    "devDependencies": {
+        "@tailwindcss/forms": "^0.5.9",
+        "@tailwindcss/postcss": "^4.1.16",
+        "@tailwindcss/vite": "^4.0.0",
+        "autoprefixer": "^10.4.21",
+        "axios": "^1.11.0",
+        "laravel-vite-plugin": "^2.0.0",
+        "postcss": "^8.5.6",
+        "prettier": "^3.6.2",
+        "prettier-plugin-blade": "^2.1.21",
+        "prettier-plugin-tailwindcss": "^0.6.14",
+        "tailwindcss": "^4.1.16",
+        "vite": "^7.0.7"
+    },
+    "dependencies": {
+        "@alpinejs/persist": "^3.14.1",
+        "@fullcalendar/core": "^6.1.15",
+        "@fullcalendar/daygrid": "^6.1.15",
+        "@fullcalendar/interaction": "^6.1.15",
+        "@fullcalendar/list": "^6.1.15",
+        "@fullcalendar/timegrid": "^6.1.15",
+        "alpinejs": "^3.15.1",
+        "apexcharts": "^3.51.0",
+        "chart.js": "^4.4.6",
+        "dropzone": "^6.0.0-beta.2",
+        "flatpickr": "^4.6.13",
+        "fullcalendar": "^6.1.15",
+        "jsvectormap": "^1.6.0",
+        "sweetalert2": "^11.26.3",
+        "swiper": "^11.1.14"
+    }
+}
