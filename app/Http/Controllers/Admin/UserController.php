@@ -6,14 +6,11 @@ use App\Helpers\Utils;
 use App\Http\Controllers\Controller;
 use App\Models\AgeCategory;
 use App\Models\BaseMetafieldUser;
-use App\Models\Community;
-use App\Models\Group;
 use App\Models\Interest;
 use App\Models\MetafieldUser;
 use App\Models\SubInterest;
 use App\Models\Twibbon;
 use App\Models\User;
-use App\Models\Village;
 use App\Models\Work;
 use App\Models\Zone;
 use Carbon\Carbon;
@@ -51,12 +48,6 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $usersValid = User::query()
-            ->when($request['village_id'], function ($query, $f) {
-                $query->where('village_id', $f);
-            })
-            ->when($request['group_id'], function ($query, $f) {
-                $query->where('group_id', $f);
-            })
             ->when($request['age_category_id'], function ($query, $f) {
                 $query->where('age_category_id', $f);
             })
@@ -68,9 +59,6 @@ class UserController extends Controller
             })
             ->when($request['sub_interest_id'], function ($query, $f) {
                 $query->where('sub_interest_id', $f);
-            })
-            ->when($request['community_id'], function ($query, $f) {
-                $query->where('community_id', $f);
             });
 
         $usersQuery = $usersValid->where('role', 'USER');
@@ -82,14 +70,6 @@ class UserController extends Controller
 
             case 'ADMIN_DAERAH':
                 $usersQuery->where('zone_id', $this->authData->zoneAdmin->id);
-                break;
-
-            case 'ADMIN_DESA':
-                $usersQuery->where('village_id', $this->authData->villageAdmin->id);
-                break;
-
-            case 'ADMIN_KELOMPOK':
-                $usersQuery->where('group_id', $this->authData->groupAdmin->id);
                 break;
         }
 
@@ -110,8 +90,6 @@ class UserController extends Controller
         $role = $this->authData->role;
         $roleFilters = [
             'ADMIN_DAERAH' => fn($q) => $q->where('zone_id', $this->authData->zoneAdmin->id),
-            'ADMIN_DESA' => fn($q) => $q->where('zone_id', $this->authData->villageAdmin->zone_id),
-            'ADMIN_KELOMPOK' => fn($q) => $q->where('zone_id', $this->authData->groupAdmin->zone_id),
         ];
 
         $applyRoleFilter = function ($query) use ($role, $roleFilters) {
@@ -123,23 +101,17 @@ class UserController extends Controller
         };
 
 
-        $villages = $applyRoleFilter(Village::query())->get();
-        $groups = $applyRoleFilter(Group::query())->get();
         $interests = $applyRoleFilter(Interest::query())->get();
         $sub_interests = $applyRoleFilter(SubInterest::query())->get();
-        $communities = $applyRoleFilter(Community::query())->get();
         $metafieldUsers = $applyRoleFilter(MetafieldUser::query())->get();
 
 
         return view('admin.user.index', [
             'users' => $users,
             'zones' => $zones,
-            'villages' => $villages,
-            'groups' => $groups,
             'interests' => $interests,
             'sub_interests' => $sub_interests,
             'age_categories' => $age_categories,
-            'communities' => $communities,
             'metafieldUsers' => $metafieldUsers,
             'filters' => $filters,
             'age_category_nama' => $age_category_nama,
@@ -163,14 +135,6 @@ class UserController extends Controller
                 $zonesQuery->where('id', $this->authData->zoneAdmin->id);
                 break;
 
-            case 'ADMIN_DESA':
-                $zonesQuery->where('id', $this->authData->villageAdmin->zone_id);
-                break;
-
-            case 'ADMIN_KELOMPOK':
-                $zonesQuery->where('id', $this->authData->groupAdmin->zone_id);
-                break;
-
             default:
                 $zonesQuery->whereRaw('1 = 0');
                 break;
@@ -180,8 +144,6 @@ class UserController extends Controller
 
         $roleFilters = [
             'ADMIN_DAERAH' => fn($q) => $q->where('zone_id', $this->authData->zoneAdmin->id),
-            'ADMIN_DESA' => fn($q) => $q->where('zone_id', $this->authData->villageAdmin->zone_id),
-            'ADMIN_KELOMPOK' => fn($q) => $q->where('zone_id', $this->authData->groupAdmin->zone_id),
         ];
 
         $applyRoleFilter = function ($query) use ($role, $roleFilters) {
@@ -193,11 +155,8 @@ class UserController extends Controller
         };
 
 
-        $villages = $applyRoleFilter(Village::query())->get();
-        $groups = $applyRoleFilter(Group::query())->get();
         $interests = $applyRoleFilter(Interest::query())->get();
         $sub_interests = $applyRoleFilter(SubInterest::query())->get();
-        $communities = $applyRoleFilter(Community::query())->get();
         $works = $applyRoleFilter(Work::query())->get();
         $metafieldUsers = $applyRoleFilter(MetafieldUser::query())->get();
         $metafieldUsers = $metafieldUsers->map(function ($m) {
@@ -206,12 +165,9 @@ class UserController extends Controller
         });
 
         return view('admin.user.create', [
-            'villages' => $villages,
-            'groups' => $groups,
             'interests' => $interests,
             'sub_interests' => $sub_interests,
             'works' => $works,
-            'communities' => $communities,
             'zones' => $zones,
             'metafieldUsers' => $metafieldUsers,
         ]);
@@ -232,20 +188,12 @@ class UserController extends Controller
             'kelamin' => ['nullable', 'in:PR,LK'],
             'interest_id' => ['nullable', 'exists:interests,id'],
             'sub_interest_id' => ['nullable', 'exists:sub_interests,id'],
-            'village_id' => ['nullable', 'exists:villages,id'],
-            'group_id' => ['nullable', 'exists:groups,id'],
             'work_id' => ['nullable', 'exists:works,id'],
             'zone_id' => ['nullable', 'exists:zones,id'],
             'status_kawin' => ['required', 'in:BELUM,SUDAH'],
             'nfc_id' => ['required'],
             'password' => ['required'],
         ]);
-
-        $request->validate([
-            'community_ids' => ['array'],
-            'community_ids.*' => ['exists:communities,id'],
-        ]);
-
 
         $tanggalLahir = $requestData['tanggal_lahir'];
         $resultUmur = Carbon::parse($tanggalLahir)->age;
@@ -269,13 +217,6 @@ class UserController extends Controller
             $requestData['zone_id'] = $request->zone_id;
         } else if ($this->authData->role === "ADMIN_DAERAH") {
             $requestData['zone_id'] = $this->authData->zoneAdmin->id ?? null;
-        } elseif ($this->authData->role === "ADMIN_DESA") {
-            $requestData['zone_id'] = $this->authData->zone_id ?? null;
-            $requestData['village_id'] = $this->authData->villageAdmin->id ?? null;
-        } elseif ($this->authData->role === "ADMIN_KELOMPOK") {
-            $requestData['zone_id'] = $this->authData->zone_id ?? null;
-            $requestData['village_id'] = $this->authData->village_id ?? null;
-            $requestData['group_id'] = $this->authData->groupAdmin->id ?? null;
         }
 
         if ($request->gambar) {
@@ -285,8 +226,6 @@ class UserController extends Controller
         }
 
         $user = User::create($requestData);
-
-        $user->communities()->sync($request->community_ids ?? []);
 
         $twibbon = Twibbon::where('zone_id', $user->zone_id)->first();
 
@@ -351,14 +290,6 @@ class UserController extends Controller
                 $zonesQuery->where('id', $this->authData->zoneAdmin->id);
                 break;
 
-            case 'ADMIN_DESA':
-                $zonesQuery->where('id', $this->authData->villageAdmin->zone_id);
-                break;
-
-            case 'ADMIN_KELOMPOK':
-                $zonesQuery->where('id', $this->authData->groupAdmin->zone_id);
-                break;
-
             default:
                 $zonesQuery->whereRaw('1 = 0');
                 break;
@@ -368,8 +299,6 @@ class UserController extends Controller
 
         $roleFilters = [
             'ADMIN_DAERAH' => fn($q) => $q->where('zone_id', $this->authData->zoneAdmin->id),
-            'ADMIN_DESA' => fn($q) => $q->where('zone_id', $this->authData->villageAdmin->zone_id),
-            'ADMIN_KELOMPOK' => fn($q) => $q->where('zone_id', $this->authData->groupAdmin->zone_id),
         ];
 
         $applyRoleFilter = function ($query) use ($role, $roleFilters) {
@@ -380,11 +309,8 @@ class UserController extends Controller
             return $query;
         };
 
-        $villages = $applyRoleFilter(Village::query())->get();
-        $groups = $applyRoleFilter(Group::query())->get();
         $interests = $applyRoleFilter(Interest::query())->get();
         $sub_interests = $applyRoleFilter(SubInterest::query())->get();
-        $communities = $applyRoleFilter(Community::query())->get();
         $works = $applyRoleFilter(Work::query())->get();
         $metafieldUsers = $applyRoleFilter(MetafieldUser::query())->get();
 
@@ -393,12 +319,9 @@ class UserController extends Controller
         }
 
         return view('admin.user.edit', [
-            'villages' => $villages,
-            'groups' => $groups,
             'interests' => $interests,
             'sub_interests' => $sub_interests,
             'works' => $works,
-            'communities' => $communities,
             'zones' => $zones,
             'data' => $data,
             'metafieldUsers' => $metafieldUsers,
@@ -422,18 +345,10 @@ class UserController extends Controller
             'kelamin' => ['nullable', 'in:PR,LK'],
             'interest_id' => ['nullable', 'exists:interests,id'],
             'sub_interest_id' => ['nullable', 'exists:sub_interests,id'],
-            'village_id' => ['nullable', 'exists:villages,id'],
-            'group_id' => ['nullable', 'exists:groups,id'],
-            'community_id' => ['nullable', 'exists:communities,id'],
             'work_id' => ['nullable', 'exists:works,id'],
             'zone_id' => ['nullable', 'exists:zones,id'],
             'status_kawin' => ['required', 'in:BELUM,SUDAH'],
             'nfc_id' => ['required'],
-        ]);
-
-        $request->validate([
-            'community_ids' => ['array'],
-            'community_ids.*' => ['exists:communities,id'],
         ]);
 
         $tanggalLahir = $requestData['tanggal_lahir'];
@@ -471,8 +386,6 @@ class UserController extends Controller
         }
 
         $user->update($requestData);
-
-        $user->communities()->sync($request->community_ids ?? []);
 
         $twibbon = Twibbon::where('zone_id', $user->zone_id)->first();
 
@@ -542,12 +455,6 @@ class UserController extends Controller
     public function history_users_index(Request $request)
     {
         $usersValid = User::query()
-            ->when($request['village_id'], function ($query, $f) {
-                $query->where('village_id', $f);
-            })
-            ->when($request['group_id'], function ($query, $f) {
-                $query->where('group_id', $f);
-            })
             ->when($request['age_category_id'], function ($query, $f) {
                 $query->where('age_category_id', $f);
             })
@@ -566,13 +473,9 @@ class UserController extends Controller
         $filters = $request->all();
 
         $age_categories = AgeCategory::get();
-        $villages = Village::get();
-        $groups = Group::get();
 
         return view('admin.user.history_index', [
             "users" => $users,
-            'villages' => $villages,
-            'groups' => $groups,
             'age_categories' => $age_categories,
             'filters' => $filters,
         ]);

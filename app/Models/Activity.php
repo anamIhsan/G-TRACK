@@ -22,8 +22,6 @@ class Activity extends Model
         'no_pj',
         'for_status_kawin',
         'zone_id',
-        'village_id',
-        'group_id',
     ];
 
     protected $appends = ['nama_hari'];
@@ -53,16 +51,6 @@ class Activity extends Model
     public function zone()
     {
         return $this->belongsTo(Zone::class);
-    }
-
-    public function village()
-    {
-        return $this->belongsTo(Village::class);
-    }
-
-    public function group()
-    {
-        return $this->belongsTo(Group::class);
     }
 
     public function notifications()

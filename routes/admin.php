@@ -3,8 +3,6 @@
 use App\Http\Controllers\Admin\ActivityController;
 use App\Http\Controllers\Admin\AgeCategoryController;
 use App\Http\Controllers\Admin\CardController;
-use App\Http\Controllers\Admin\CommunityController;
-use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\Admin\InterestController;
 use App\Http\Controllers\Admin\LevelController;
 use App\Http\Controllers\Admin\MetafieldLevelController;
@@ -14,7 +12,6 @@ use App\Http\Controllers\Admin\PresenceController;
 use App\Http\Controllers\Admin\SubAdminController;
 use App\Http\Controllers\Admin\SubInterestController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\VillageController;
 use App\Http\Controllers\Admin\WorkController;
 use App\Http\Controllers\Admin\ZoneController;
 use App\Http\Controllers\Export\PresenceExportController;
@@ -25,18 +22,15 @@ use Illuminate\Support\Facades\Route;
 
 $prefix = 'admin';
 
-Route::prefix($prefix)->middleware(['auth', 'role:MASTER|ADMIN_DAERAH|ADMIN_DESA|ADMIN_KELOMPOK'])->name('admin.')->group(function () {
+Route::prefix($prefix)->middleware(['auth', 'role:MASTER|ADMIN_DAERAH'])->name('admin.')->group(function () {
     Route::post('users/image/crop', [UserController::class, 'imageCrop'])->name('users.image.crop');
     Route::resource('users', UserController::class);
     Route::get('history_users', [UserController::class, 'history_users_index'])->name('history_users.index');
     Route::put('history_users/{id}/update', [UserController::class, 'history_users_update'])->name('history_users.update');
     Route::resource('levels', LevelController::class);
     Route::resource('works', WorkController::class);
-    Route::resource('communities', CommunityController::class);
     Route::resource('interests', InterestController::class);
     Route::resource('sub_interests', SubInterestController::class)->only(['update', 'store', 'destroy']);
-    Route::resource('villages', VillageController::class);
-    Route::resource('groups', GroupController::class);
     Route::resource('activities', ActivityController::class)->except(['show']);
     Route::post('send_recap', [NotificationController::class, 'sendRecap'])->name('send_recap');
     Route::resource('notifications', NotificationController::class);

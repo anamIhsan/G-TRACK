@@ -37,8 +37,6 @@ class MetafieldUserController extends Controller
 
         if ($this->authData->role === 'MASTER') {
             // All access
-        } elseif ($this->authData->role === 'ADMIN_DAERAH') {
-            $query->where('zone_id', $this->authData->zoneAdmin->id);
         } else {
             abort(403);
         }
@@ -55,11 +53,7 @@ class MetafieldUserController extends Controller
      */
     public function create()
     {
-        $zones = Zone::get();
-
-        return view('admin.metafield_user.create', [
-            'zones' => $zones,
-        ]);
+        return view('admin.metafield_user.create');
     }
 
     /**
@@ -71,7 +65,6 @@ class MetafieldUserController extends Controller
             'field' => 'required|string',
             'type' => 'required|in:STRING,ENUM',
             'enum_values.*' => 'nullable|required_if:type,ENUM',
-            'zone_id' => 'nullable|exists:zones,id',
         ]);
 
         if ($requestData['enum_values'][0] != null) {
@@ -104,11 +97,9 @@ class MetafieldUserController extends Controller
     {
         $data = MetafieldUser::find($id);
 
-        $zones = Zone::get();
 
         return view('admin.metafield_user.edit', [
             'data' => $data,
-            'zones' => $zones,
         ]);
     }
 
@@ -123,7 +114,6 @@ class MetafieldUserController extends Controller
             'field' => 'required|string',
             'type' => 'required|in:STRING,ENUM',
             'enum_values.*' => 'nullable|required_if:type,ENUM',
-            'zone_id' => 'nullable|exists:zones,id',
         ]);
 
         if ($requestData['enum_values'][0] != null) {

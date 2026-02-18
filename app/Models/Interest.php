@@ -16,11 +16,6 @@ class Interest extends Model
         'zone_id',
     ];
 
-    public function village()
-    {
-        return $this->belongsTo(Village::class, 'village_id');
-    }
-
     public function users()
     {
         return $this->hasMany(User::class, 'interest_id', 'id');

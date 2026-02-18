@@ -30,8 +30,6 @@ class PresenceExportController extends Controller
             // ======================
             $baseUserQuery = User::where('role', 'USER')
                 ->where('zone_id', $activity->zone_id)
-                ->where('village_id', $activity->village_id)
-                ->where('group_id', $activity->group_id)
                 ->where(function ($query) use ($ageCategoryIds, $allowedStatusKawin) {
                     $query->whereIn('age_category_id', $ageCategoryIds);
 

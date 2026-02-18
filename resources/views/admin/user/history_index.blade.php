@@ -60,40 +60,6 @@
                             <div class="grid grid-cols-1 gap-3 mt-5 space-y-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                                 <div>
                                     <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Desa
-                                    </label>
-                                    <select name="village_id"
-                                        class="w-full rounded-lg border border-gray-300 bg-white/5 p-2.5 text-gray-800 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 focus:ring-2 focus:ring-blue-500">
-                                        <option selected value="">Semua Desa</option>
-                                        @foreach ($villages as $village)
-                                            <option
-                                                {{ isset($filters['village_id']) ? ($filters['village_id'] == $village->id ? 'selected' : '') : '' }}
-                                                value="{{ $village->id }}">
-                                                {{ $village->nama }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Kelompok
-                                    </label>
-                                    <select name="group_id"
-                                        class="w-full rounded-lg border border-gray-300 bg-white/5 p-2.5 text-gray-800 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700 focus:ring-2 focus:ring-blue-500">
-                                        <option selected value="">Semua Kelompok</option>
-                                        @foreach ($groups as $group)
-                                            <option
-                                                {{ isset($filters['group_id']) ? ($filters['group_id'] == $group->id ? 'selected' : '') : '' }}
-                                                value="{{ $group->id }}">
-                                                {{ $group->nama }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                                         Kategori Umur
                                     </label>
                                     <select name="age_category_id"

@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Group;
 use App\Models\User;
-use App\Models\Village;
 use App\Models\Zone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,13 +14,9 @@ class AuthController extends Controller
     public function showLogin()
     {
         $zones = Zone::get();
-        $villages = Village::get();
-        $groups = Group::get();
 
         return view('pages.signin', [
             'zones' => $zones,
-            'villages' => $villages,
-            'groups' => $groups,
         ]);
     }
 
@@ -85,10 +79,8 @@ class AuthController extends Controller
     {
         $credentials = $request->validate([
             'password' => 'required',
-            'level' => 'required|in:MASTER,ADMIN_DAERAH,ADMIN_DESA,ADMIN_KELOMPOK,USER',
-            'zone_id' => 'nullable|exists:zones,id|required_if:level,ADMIN_DAERAH,ADMIN_DESA,ADMIN_KELOMPOK',
-            'village_id' => 'nullable|exists:villages,id|required_if:level,ADMIN_DESA,ADMIN_KELOMPOK',
-            'group_id' => 'nullable|exists:groups,id|required_if:level,ADMIN_KELOMPOK',
+            'level' => 'required|in:MASTER,ADMIN_DAERAH,USER',
+            'zone_id' => 'nullable|exists:zones,id|required_if:level,ADMIN_DAERAH',
             'no_tlp' => 'nullable',
             'email' => 'nullable',
         ]);
@@ -134,14 +126,6 @@ class AuthController extends Controller
                 $query->where('id', $credentials['zone_id']);
             })->where('role', $credentials['level'])
                 ->first();
-        } elseif ($credentials['level'] === 'ADMIN_DESA') {
-            $user = User::whereHas('villageAdmin', function ($query) use ($credentials) {
-                $query->where('id', $credentials['village_id'])->where('zone_id', $credentials['zone_id']);
-            })->where('role', $credentials['level'])->first();
-        } elseif ($credentials['level'] === 'ADMIN_KELOMPOK') {
-            $user = User::whereHas('groupAdmin', function ($query) use ($credentials) {
-                $query->where('id', $credentials['group_id'])->where('zone_id', $credentials['zone_id'])->where('village_id', $credentials['village_id']);
-            })->where('role', $credentials['level'])->first();
         }
 
         if ($user && Hash::check($credentials['password'], $user->password)) {

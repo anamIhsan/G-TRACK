@@ -70,13 +70,6 @@
                                         </div>
                                     </th>
                                     <th class="px-4 py-3">
-                                        <div class="flex items-center col-span-2">
-                                            <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
-                                                Daerah
-                                            </p>
-                                        </div>
-                                    </th>
-                                    <th class="px-4 py-3">
                                         <div class="flex items-center">
                                             <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
                                                 Aksi

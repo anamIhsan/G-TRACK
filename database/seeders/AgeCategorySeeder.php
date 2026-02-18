@@ -17,12 +17,12 @@ class AgeCategorySeeder extends Seeder
 
         $age_categories = [
             [
-                "nama" => "Paud",
+                "nama" => "PAUD",
                 "range_one" => 1,
                 "range_two" => 9
             ],
             [
-                "nama" => "Caberawit",
+                "nama" => "Anak-Anak",
                 "range_one" => 10,
                 "range_two" => 14
             ],

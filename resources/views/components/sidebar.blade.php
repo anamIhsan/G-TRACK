@@ -7,7 +7,7 @@ foreach ($age_categories_data as $key => $age_category) {
         'name' => $age_category->nama,
         'icon' => 'fa-regular fa-user',
         'url' => route('admin.users.index', ['age_category_id' => $age_category->id]),
-        'role' => ['master', 'admin_daerah', 'admin_desa', 'admin_kelompok'],
+        'role' => ['master', 'admin_daerah'],
     ];
 }
 
@@ -15,13 +15,13 @@ $menus = [
     'menu' => [
         'name' => 'MENU',
         'icon' => 'fa-regular fa-menu',
-        'role' => ['master', 'admin_daerah', 'admin_desa', 'admin_kelompok', 'user'],
+        'role' => ['master', 'admin_daerah', 'user'],
         'children' => [
             'dashboard' => [
                 'name' => 'Dashboard',
                 'icon' => 'fa-regular fa-house',
                 'url' => route('dashboard'),
-                'role' => ['master', 'admin_daerah', 'admin_desa', 'admin_kelompok', 'user'],
+                'role' => ['master', 'admin_daerah', 'user'],
             ],
             'user_presences' => [
                 'name' => 'Presensi Pengguna',
@@ -50,22 +50,16 @@ $menus = [
                 'role' => ['user'],
                 'url' => route('user.user_activities.index'),
             ],
-            // "subadmins" => [
-            //     "name" => "Data SubAdmin",
-            //     "icon" => "fa-solid fa-user-lock",
-            //     "url" => route("admin.subadmins.index"),
-            //     "role" => ["master", "admin_daerah", "admin_desa", "admin_kelompok"],
-            // ],
             'users' => [
                 'name' => 'Data Pengguna',
                 'icon' => 'fa-solid fa-users',
-                'role' => ['master', 'admin_daerah', 'admin_desa', 'admin_kelompok'],
+                'role' => ['master', 'admin_daerah'],
                 'children' => [
                     'users' => [
                         'name' => 'Semua Pengguna',
                         'icon' => 'fa-regular fa-user',
                         'url' => route('admin.users.index'),
-                        'role' => ['master', 'admin_daerah', 'admin_desa', 'admin_kelompok'],
+                        'role' => ['master', 'admin_daerah'],
                     ],
                     ...$age_categories,
                 ],
@@ -74,44 +68,44 @@ $menus = [
                 'name' => 'History Pengguna',
                 'icon' => 'fa-solid fa-user-clock',
                 'url' => route('admin.history_users.index'),
-                'role' => ['master', 'admin_daerah', 'admin_desa', 'admin_kelompok'],
+                'role' => ['master', 'admin_daerah'],
             ],
             'cards' => [
                 'name' => 'Cetak Kartu',
                 'icon' => 'fa-regular fa-id-badge',
                 'url' => route('admin.cards.index'),
-                'role' => ['master', 'admin_daerah', 'admin_desa', 'admin_kelompok'],
+                'role' => ['master', 'admin_daerah'],
             ],
             'levels' => [
                 'name' => 'Tingkat Kekhataman',
                 'icon' => 'fa-regular fa-gem',
                 'url' => route('admin.levels.index'),
-                'role' => ['master', 'admin_daerah', 'admin_desa', 'admin_kelompok'],
+                'role' => ['master', 'admin_daerah'],
             ],
             'activities' => [
                 'name' => 'Jadwal Kegiatan',
                 'icon' => 'fa-regular fa-calendar-days',
                 'url' => route('admin.activities.index'),
-                'role' => ['master', 'admin_daerah', 'admin_desa', 'admin_kelompok'],
+                'role' => ['master', 'admin_daerah'],
             ],
             'notifications' => [
                 'name' => 'Notifikasi',
                 'icon' => 'fa-regular fa-bell',
                 'url' => route('admin.notifications.index'),
-                'role' => ['master', 'admin_daerah', 'admin_desa', 'admin_kelompok'],
+                'role' => ['master', 'admin_daerah'],
             ],
             'presences' => [
                 'name' => 'Presensi',
                 'icon' => 'fa-regular fa-newspaper',
                 'url' => route('admin.presences.index'),
-                'role' => ['master', 'admin_daerah', 'admin_desa', 'admin_kelompok'],
+                'role' => ['master', 'admin_daerah'],
             ],
         ],
     ],
     'master_data' => [
         'name' => 'MASTER DATA',
         'icon' => 'fa-regular fa-master-data',
-        'role' => ['master', 'admin_daerah', 'admin_desa', 'admin_kelompok'],
+        'role' => ['master', 'admin_daerah'],
         'children' => [
             'age_categories' => [
                 'name' => 'Data Kategori Umur',
@@ -125,35 +119,17 @@ $menus = [
                 'url' => route('admin.zones.index'),
                 'role' => ['master'],
             ],
-            'villages' => [
-                'name' => 'Data Desa',
-                'icon' => 'fa-regular fa-building',
-                'url' => route('admin.villages.index'),
-                'role' => ['master', 'admin_daerah'],
-            ],
-            'groups' => [
-                'name' => 'Data Kelompok',
-                'icon' => 'fa-solid fa-people-group',
-                'url' => route('admin.groups.index'),
-                'role' => ['master', 'admin_daerah', 'admin_desa'],
-            ],
             'interest' => [
                 'name' => 'Data Minat',
                 'icon' => 'fa-regular fa-hand-pointer',
                 'url' => route('admin.interests.index'),
-                'role' => ['master', 'admin_daerah', 'admin_desa', 'admin_kelompok'],
-            ],
-            'communities' => [
-                'name' => 'Data Komunitas',
-                'icon' => 'fa-solid fa-handshake',
-                'url' => route('admin.communities.index'),
-                'role' => ['master', 'admin_daerah', 'admin_desa', 'admin_kelompok'],
+                'role' => ['master', 'admin_daerah'],
             ],
             'works' => [
                 'name' => 'Data Pekerjaan',
                 'icon' => 'fa-solid fa-briefcase',
                 'url' => route('admin.works.index'),
-                'role' => ['master', 'admin_daerah', 'admin_desa', 'admin_kelompok'],
+                'role' => ['master', 'admin_daerah'],
             ],
         ],
     ],
@@ -166,7 +142,7 @@ $menus = [
                 'name' => 'Custom Kolom Pengguna',
                 'icon' => 'fa-solid fa-table-columns',
                 'url' => route('admin.metafield_user.index'),
-                'role' => ['master', 'admin_daerah', 'admin_desa', 'admin_kelompok'],
+                'role' => ['master', 'admin_daerah'],
             ],
             'metafield_levels' => [
                 'name' => 'Materi Kekhataman',
@@ -179,7 +155,7 @@ $menus = [
     'others' => [
         'name' => 'OTHERS',
         'icon' => 'fa-regular fa-others',
-        'role' => ['master', 'admin_daerah', 'admin_desa', 'admin_kelompok', 'user'],
+        'role' => ['master', 'admin_daerah', 'user'],
         'children' => [
             'profile' => [
                 'name' => 'Profile',
@@ -191,13 +167,13 @@ $menus = [
                 'name' => 'Pengaturan',
                 'icon' => 'fa-regular fa-address-card',
                 'url' => route('setting.index'),
-                'role' => ['master', 'admin_daerah', 'admin_desa', 'admin_kelompok', 'user'],
+                'role' => ['master', 'admin_daerah', 'user'],
             ],
             'logout' => [
                 'name' => 'Keluar',
                 'icon' => 'fa-solid fa-arrow-right-from-bracket',
                 'url' => route('auth.logout'),
-                'role' => ['master', 'admin_daerah', 'admin_desa', 'admin_kelompok', 'user'],
+                'role' => ['master', 'admin_daerah', 'user'],
             ],
         ],
     ],

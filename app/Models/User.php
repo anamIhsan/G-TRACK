@@ -71,11 +71,6 @@ class User extends Authenticatable
         return $this->belongsTo(Work::class, 'work_id');
     }
 
-    public function group()
-    {
-        return $this->belongsTo(Group::class, 'group_id');
-    }
-
     public function interest()
     {
         return $this->belongsTo(Interest::class, 'interest_id');
@@ -84,16 +79,6 @@ class User extends Authenticatable
     public function subInterest()
     {
         return $this->belongsTo(SubInterest::class, 'sub_interest_id');
-    }
-
-    public function village()
-    {
-        return $this->belongsTo(Village::class, 'village_id');
-    }
-
-    public function communities()
-    {
-        return $this->belongsToMany(Community::class);
     }
 
     public function level()
@@ -114,16 +99,6 @@ class User extends Authenticatable
     public function zoneAdmin()
     {
         return $this->hasOne(Zone::class, 'user_id', 'id');
-    }
-
-    public function villageAdmin()
-    {
-        return $this->hasOne(Village::class, 'user_id', 'id');
-    }
-
-    public function groupAdmin()
-    {
-        return $this->hasOne(Group::class, 'user_id', 'id');
     }
 
     public function presence()

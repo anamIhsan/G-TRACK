@@ -4,11 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AgeCategory;
-use App\Models\Group;
 use App\Models\Level;
 use App\Models\MetafieldLevel;
 use App\Models\User;
-use App\Models\Village;
 use App\Models\Zone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,8 +35,6 @@ class LevelController extends Controller
     {
         $query = User::query()
             ->where('role', 'USER')
-            ->when($request->village_id, fn($q, $f) => $q->where('village_id', $f))
-            ->when($request->group_id, fn($q, $f) => $q->where('group_id', $f))
             ->when($request->age_category_id, fn($q, $f) => $q->where('age_category_id', $f));
 
         if ($this->authData->role === "MASTER") {
@@ -54,8 +50,6 @@ class LevelController extends Controller
         $metafieldLevels = MetafieldLevel::get();
         $age_categories = AgeCategory::get();
         $zones = Zone::get();
-        $villages = Village::get();
-        $groups = Group::get();
         $levels = Level::get();
 
         $age_category_nama = $request->age_category_id
@@ -66,8 +60,6 @@ class LevelController extends Controller
             'users' => $users,
             'age_categories' => $age_categories,
             'zones' => $zones,
-            'villages' => $villages,
-            'groups' => $groups,
             'levels' => $levels,
             'metafieldLevels' => $metafieldLevels,
             'filters' => $request->all(),

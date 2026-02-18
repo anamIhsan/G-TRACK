@@ -22,11 +22,6 @@ class Zone extends Model
         return $this->hasOne(User::class, 'id', 'user_id');
     }
 
-    public function villages()
-    {
-        return $this->hasMany(Village::class);
-    }
-
     public function metafieldUser()
     {
         return $this->hasOne(MetafieldUser::class);

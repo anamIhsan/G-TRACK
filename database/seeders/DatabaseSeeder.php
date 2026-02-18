@@ -30,19 +30,15 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         User::truncate();
-        // AgeCategory::truncate();
-        // Zone::truncate();
-        // Village::truncate();
+        AgeCategory::truncate();
+        Zone::truncate();
         // Work::truncate();
-        // Group::truncate();
-        // Interest::truncate();
-        // SubInterest::truncate();
+        Interest::truncate();
+        SubInterest::truncate();
 
         $this->call([
-            // AgeCategorySeeder::class,
-            // ZoneSeeder::class,
-            // VillageSeeder::class,
-            // GroupSeeder::class,
+            AgeCategorySeeder::class,
+            ZoneSeeder::class,
             // InterestSeeder::class,
             // SubInterestSeeder::class,
             // WorkSeeder::class,

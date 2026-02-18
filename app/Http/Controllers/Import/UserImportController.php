@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Import;
 
 use App\Http\Controllers\Controller;
+use App\Models\AgeCategory;
 use App\Models\Interest;
 use App\Models\User;
 use App\Models\Zone;
@@ -32,7 +33,9 @@ class UserImportController extends Controller
 
         $path = public_path('imports/' . $filename);
 
-        $firstLine = fgets(fopen($path, 'r'));
+        $handle = fopen($path, 'r');
+
+        $firstLine = fgets($handle);
 
         if (str_contains($firstLine, ';')) {
             $delimiter = ';';
@@ -42,10 +45,11 @@ class UserImportController extends Controller
             $delimiter = ';';
         }
 
-        $rows = SimpleExcelReader::create($path)->useDelimiter($delimiter)->getRows();
+        $rows = SimpleExcelReader::create($path)->useDelimiter($delimiter);
 
-        $rows->each(function ($row) {
-            $zone = Zone::where('nama', '==', '%'.$row['daerah'].'%')->first();
+        $rows->getRows()->each(function ($row) {
+            $zone = Zone::where('nama', 'LIKE', '%'.$row['daerah'].'%')->first();
+
             if(!$zone){
                 $username = strtolower(str_replace(' ', '', $row['daerah']));
 
@@ -62,7 +66,7 @@ class UserImportController extends Controller
                     'user_id' => $user->id,
                 ]);
             }
-            $interest = Interest::where('nama', '==', '%'.$row['minat'].'%')->first();
+            $interest = Interest::where('nama', 'LIKE', '%'.$row['minat'].'%')->first();
             if(!$interest){
                 $interest = Interest::create([
                     'nama' => $row['minat'],
@@ -73,6 +77,15 @@ class UserImportController extends Controller
             $tanggalInput = $row['tanggal_lahir'];
             $tanggalahir = Carbon::createFromFormat('d-m-Y', $tanggalInput)->format('Y-m-d');
             $resultUmur = Carbon::parse($tanggalahir)->age;
+            $ageCategory_id = "";
+
+            if ($resultUmur && $row['status_kawin'] === "BELUM") {
+                $ageCategory = AgeCategory::where('range_one', '<=', $resultUmur)->where('range_two', '>=', $resultUmur)->first();
+
+                if ($ageCategory) {
+                    $ageCategory_id = $ageCategory->id;
+                }
+            }
 
             User::create([
                 'nama' => $row['nama'],
@@ -88,10 +101,20 @@ class UserImportController extends Controller
                 'interest_id' => $interest->id,
                 'tanggal_lahir' => $tanggalahir,
                 'zone_id' => $zone->id,
+                'age_category_id' => $ageCategory_id,
             ]);
         });
 
-        unlink($path);
+        fclose($handle);
+        $rows->close();
+        unset($rows);
+        gc_collect_cycles();
+
+        sleep(1);
+
+        if (file_exists($path)) {
+            unlink($path);
+        }
 
         return back()->with('success', 'Data pengguna berhasil diimport!');
     }

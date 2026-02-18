@@ -5,9 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\AgeCategory;
-use App\Models\Group;
 use App\Models\User;
-use App\Models\Village;
 use App\Models\Zone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,7 +24,7 @@ class ActivityController extends Controller
     {
         $auth = Auth::user();
         $this->auth = $auth;
-        $this->authData = User::with(['zoneAdmin', 'villageAdmin', 'groupAdmin'])->find($auth->id);
+        $this->authData = User::with(['zoneAdmin'])->find($auth->id);
     }
 
     /**
@@ -40,13 +38,6 @@ class ActivityController extends Controller
             // No filter
         } elseif ($this->authData->role === "ADMIN_DAERAH") {
             $query->where('zone_id', $this->authData->zoneAdmin->id);
-        } elseif ($this->authData->role === 'ADMIN_DESA') {
-            $query->where('zone_id', $this->authData->villageAdmin->zone_id)
-                ->where('village_id', $this->authData->villageAdmin->id);
-        } elseif ($this->authData->role === 'ADMIN_KELOMPOK') {
-            $query->where('zone_id', $this->authData->groupAdmin->zone_id)
-                ->where('village_id', $this->authData->groupAdmin->village_id)
-                ->where('group_id', $this->authData->groupAdmin->id);
         }
 
         $activities = $query->latest()->paginate(10);
@@ -64,14 +55,10 @@ class ActivityController extends Controller
     {
         $age_categories = AgeCategory::get();
         $zones = Zone::get();
-        $villages = Village::get();
-        $groups = Group::get();
 
         return view('admin.activity.create', [
             'age_categories' => $age_categories,
             'zones' => $zones,
-            'villages' => $villages,
-            'groups' => $groups,
         ]);
     }
 
@@ -95,34 +82,12 @@ class ActivityController extends Controller
         if ($this->authData->role === 'MASTER') {
             $request->validate([
                 'zone_id' => 'required|exists:zones,id',
-                'village_id' => 'required|exists:villages,id',
-                'group_id' => 'required|exists:groups,id',
             ]);
 
             $requestData['zone_id'] = $request->zone_id;
-            $requestData['village_id'] = $request->village_id;
-            $requestData['group_id'] = $request->group_id;
         } elseif ($this->authData->role === 'ADMIN_DAERAH') {
-            $request->validate([
-                'village_id' => 'required|exists:villages,id',
-                'group_id' => 'required|exists:groups,id',
-            ]);
 
             $requestData['zone_id'] = $this->authData->zoneAdmin->id;
-            $requestData['village_id'] = $request->village_id;
-            $requestData['group_id'] = $request->group_id;
-        } elseif ($this->authData->role === 'ADMIN_DESA') {
-            $request->validate([
-                'group_id' => 'required|exists:groups,id',
-            ]);
-
-            $requestData['zone_id'] = $this->authData->villageAdmin->zone->id;
-            $requestData['village_id'] = $this->authData->villageAdmin->id;
-            $requestData['group_id'] = $request->group_id;
-        } elseif ($this->authData->role === 'ADMIN_KELOMPOK') {
-            $requestData['zone_id'] = $this->authData->groupAdmin->zone->id;
-            $requestData['village_id'] = $this->authData->groupAdmin->village->id;
-            $requestData['group_id'] = $this->authData->groupAdmin->id;
         } else {
             return redirect()->route('403');
         }
@@ -149,8 +114,6 @@ class ActivityController extends Controller
         $age_categories = AgeCategory::get();
         $data = Activity::find($id);
         $zones = Zone::get();
-        $villages = Village::get();
-        $groups = Group::get();
 
         if (!$data) {
             return redirect()
@@ -162,8 +125,6 @@ class ActivityController extends Controller
             'age_categories' => $age_categories,
             'data' => $data,
             'zones' => $zones,
-            'villages' => $villages,
-            'groups' => $groups,
         ]);
     }
 
@@ -199,34 +160,12 @@ class ActivityController extends Controller
         if ($this->authData->role === 'MASTER') {
             $request->validate([
                 'zone_id' => 'required|exists:zones,id',
-                'village_id' => 'required|exists:villages,id',
-                'group_id' => 'required|exists:groups,id',
             ]);
 
             $requestData['zone_id'] = $request->zone_id;
-            $requestData['village_id'] = $request->village_id;
-            $requestData['group_id'] = $request->group_id;
         } elseif ($this->authData->role === 'ADMIN_DAERAH') {
-            $request->validate([
-                'village_id' => 'required|exists:villages,id',
-                'group_id' => 'required|exists:groups,id',
-            ]);
 
             $requestData['zone_id'] = $this->authData->zoneAdmin->id;
-            $requestData['village_id'] = $request->village_id;
-            $requestData['group_id'] = $request->group_id;
-        } elseif ($this->authData->role === 'ADMIN_DESA') {
-            $request->validate([
-                'group_id' => 'required|exists:groups,id',
-            ]);
-
-            $requestData['zone_id'] = $this->authData->villageAdmin->zone->id;
-            $requestData['village_id'] = $this->authData->villageAdmin->id;
-            $requestData['group_id'] = $request->group_id;
-        } elseif ($this->authData->role === 'ADMIN_KELOMPOK') {
-            $requestData['zone_id'] = $this->authData->groupAdmin->zone->id;
-            $requestData['village_id'] = $this->authData->groupAdmin->village->id;
-            $requestData['group_id'] = $this->authData->groupAdmin->id;
         } else {
             return redirect()->route('403');
         }

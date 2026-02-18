@@ -19,7 +19,7 @@ class SubInterest extends Model
 
     public function interest()
     {
-        return $this->belongsTo(Village::class, 'interest_id');
+        return $this->belongsTo(Interest::class, 'interest_id');
     }
 
     public function zone()

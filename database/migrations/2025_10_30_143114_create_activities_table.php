@@ -21,8 +21,6 @@ return new class extends Migration
             $table->string('materi');
             $table->string('tempat');
             $table->foreignUuid('zone_id');
-            $table->foreignUuid('village_id');
-            $table->foreignUuid('group_id');
             $table->string('no_pj');
             $table->json('for_status_kawin')->nullable();
             $table->timestamps();

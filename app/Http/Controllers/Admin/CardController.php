@@ -5,13 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Helpers\Utils;
 use App\Http\Controllers\Controller;
 use App\Models\AgeCategory;
-use App\Models\Community;
-use App\Models\Group;
 use App\Models\Interest;
 use App\Models\SubInterest;
 use App\Models\Twibbon;
 use App\Models\User;
-use App\Models\Village;
 use App\Models\Zone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,22 +39,15 @@ class CardController extends Controller
     {
         $query = User::query()
             ->where('role', 'USER')
-            ->when($request->village_id, fn($q, $f) => $q->where('village_id', $f))
-            ->when($request->group_id, fn($q, $f) => $q->where('group_id', $f))
             ->when($request->age_category_id, fn($q, $f) => $q->where('age_category_id', $f))
             ->when($request->kelamin, fn($q, $f) => $q->where('kelamin', $f))
             ->when($request->interest_id, fn($q, $f) => $q->where('interest_id', $f))
-            ->when($request->sub_interest_id, fn($q, $f) => $q->where('sub_interest_id', $f))
-            ->when($request->community_id, fn($q, $f) => $q->where('community_id', $f));
+            ->when($request->sub_interest_id, fn($q, $f) => $q->where('sub_interest_id', $f));
 
         if ($this->authData->role === "MASTER") {
             // No extra filter
         } elseif ($this->authData->role === "ADMIN_DAERAH") {
             $query->where('zone_id', $this->authData->zoneAdmin->id);
-        } elseif ($this->authData->role === "ADMIN_DESA") {
-            $query->where('village_id', $this->authData->villageAdmin->id);
-        } elseif ($this->authData->role === "ADMIN_KELOMPOK") {
-            $query->where('group_id', $this->authData->groupAdmin->id);
         }
 
         $users = $query->latest()->paginate(10)->withQueryString();
@@ -77,11 +67,8 @@ class CardController extends Controller
             'authData' => $this->authData,
             'age_category_nama' => $age_category_nama,
             'age_categories' => AgeCategory::get(),
-            'villages' => Village::get(),
-            'groups' => Group::get(),
             'interests' => Interest::get(),
             'sub_interests' => SubInterest::get(),
-            'communities' => Community::get(),
             'zones' => Zone::get(),
             'filters' => $request->all(),
         ]);
@@ -211,12 +198,6 @@ class CardController extends Controller
     public function twibbon_download_all(Request $request)
     {
         $usersValid = User::query()
-            ->when($request['village_id'], function ($query, $f) {
-                $query->where('village_id', $f);
-            })
-            ->when($request['group_id'], function ($query, $f) {
-                $query->where('group_id', $f);
-            })
             ->when($request['age_category_id'], function ($query, $f) {
                 $query->where('age_category_id', $f);
             })
@@ -228,19 +209,12 @@ class CardController extends Controller
             })
             ->when($request['sub_interest_id'], function ($query, $f) {
                 $query->where('sub_interest_id', $f);
-            })
-            ->when($request['community_id'], function ($query, $f) {
-                $query->where('community_id', $f);
             });
 
         if ($this->authData->role === "MASTER") {
             $users = $usersValid->where('role', 'USER')->get();
         } elseif ($this->authData->role === "ADMIN_DAERAH") {
             $users = $usersValid->where('role', 'USER')->where('zone_id', $this->authData->zoneAdmin->id)->get();
-        } elseif ($this->authData->role === "ADMIN_DESA") {
-            $users = $usersValid->where('role', 'USER')->where('village_id', $this->authData->villageAdmin->id)->get();
-        } elseif ($this->authData->role === "ADMIN_KELOMPOK") {
-            $users = $usersValid->where('role', 'USER')->where('group_id', $this->authData->groupAdmin->id)->get();
         }
 
         $zipFileName = 'twibbon.zip';

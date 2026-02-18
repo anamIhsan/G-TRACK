@@ -24,7 +24,7 @@ class PresenceController extends Controller
     {
         $auth = Auth::user();
         $this->auth = $auth;
-        $this->authData = User::with(['zoneAdmin', 'villageAdmin', 'groupAdmin'])->find($auth->id);
+        $this->authData = User::with(['zoneAdmin'])->find($auth->id);
     }
 
     /**
@@ -36,13 +36,6 @@ class PresenceController extends Controller
             $activities = Activity::get();
         } elseif ($this->authData->role === 'ADMIN_DAERAH') {
             $activities = Activity::where('zone_id', $this->authData->zoneAdmin->id)->get();
-        } elseif ($this->authData->role === 'ADMIN_DESA') {
-            $activities = Activity::where('zone_id', $this->authData->villageAdmin->zone_id)
-                ->where('village_id', $this->authData->villageAdmin->id)->get();
-        } elseif ($this->authData->role === 'ADMIN_KELOMPOK') {
-            $activities = Activity::where('zone_id', $this->authData->groupAdmin->zone_id)
-                ->where('village_id', $this->authData->groupAdmin->village_id)
-                ->where('group_id', $this->authData->groupAdmin->id)->get();
         }
 
         $today = Carbon::today();
@@ -66,8 +59,6 @@ class PresenceController extends Controller
             if ($activity->type === "SEKALI") {
                 $usersWithPresence = User::where('role', 'USER')
                     ->where('zone_id', $activity->zone_id)
-                    ->where('village_id', $activity->village_id)
-                    ->where('group_id', $activity->group_id)
                     ->where(function ($query) use ($ageCategoryIds, $activity) {
                         $query->whereIn('age_category_id', $ageCategoryIds)
                             ->orWhereIn(
@@ -82,8 +73,6 @@ class PresenceController extends Controller
 
                 $usersNotPresence = User::where('role', 'USER')
                     ->where('zone_id', $activity->zone_id)
-                    ->where('village_id', $activity->village_id)
-                    ->where('group_id', $activity->group_id)
                     ->where(function ($query) use ($ageCategoryIds, $activity) {
                         $query->whereIn('age_category_id', $ageCategoryIds)
                             ->orWhereIn(
@@ -100,8 +89,6 @@ class PresenceController extends Controller
             } else {
                 $usersWithPresence = User::where('role', 'USER')
                     ->where('zone_id', $activity->zone_id)
-                    ->where('village_id', $activity->village_id)
-                    ->where('group_id', $activity->group_id)
                     ->where(function ($query) use ($ageCategoryIds, $activity) {
                         $query->whereIn('age_category_id', $ageCategoryIds)
                             ->orWhereIn(
@@ -119,8 +106,6 @@ class PresenceController extends Controller
 
                 $usersNotPresence = User::where('role', 'USER')
                     ->where('zone_id', $activity->zone_id)
-                    ->where('village_id', $activity->village_id)
-                    ->where('group_id', $activity->group_id)
                     ->where(function ($query) use ($ageCategoryIds, $activity) {
                         $query->whereIn('age_category_id', $ageCategoryIds)
                             ->orWhereIn(
@@ -315,8 +300,6 @@ class PresenceController extends Controller
         if ($shouldLoadCurrentUsers) {
             $currentUsers = User::where('role', 'USER')
                 ->where('zone_id', $activity->zone_id)
-                ->where('village_id', $activity->village_id)
-                ->where('group_id', $activity->group_id)
                 ->where(function ($query) use ($ageCategoryIds, $activity) {
                     $query->whereIn('age_category_id', $ageCategoryIds)
                         ->orWhereIn(

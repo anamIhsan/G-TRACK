@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('hint_password');
             $table->enum('status_kawin', ['SUDAH', 'BELUM'])->default('BELUM');
             $table->boolean('status_request')->default(1);
-            $table->enum('role', ['MASTER', 'ADMIN_DAERAH', 'ADMIN_DESA', 'ADMIN_KELOMPOK', 'USER'])->default('USER');
+            $table->enum('role', ['MASTER', 'ADMIN_DAERAH', 'USER'])->default('USER');
 
             $table->string('nfc_id')->nullable();
             $table->text('twibbon_user')->nullable();
@@ -35,9 +35,6 @@ return new class extends Migration
 
             $table->foreignUuid('interest_id')->nullable();
             $table->foreignUuid('sub_interest_id')->nullable();
-            $table->foreignUuid('village_id')->nullable();
-            $table->foreignUuid('group_id')->nullable();
-            // $table->foreignUuid('community_id')->nullable();
             $table->foreignUuid('age_category_id')->nullable();
             $table->foreignUuid('work_id')->nullable();
             $table->foreignUuid('zone_id')->nullable();
@@ -46,12 +43,6 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
         });
-
-        // Schema::create('password_reset_tokens', function (Blueprint $table) {
-        //     $table->string('email')->primary();
-        //     $table->string('token');
-        //     $table->timestamp('created_at')->nullable();
-        // });
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();

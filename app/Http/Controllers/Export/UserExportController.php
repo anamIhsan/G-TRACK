@@ -41,12 +41,9 @@ class UserExportController extends Controller
                 'Password',
                 'Status Kawin',
                 'Daerah',
-                'Desa',
-                'Kelompok',
                 'Pekerjaan',
                 'Minat',
                 'Sub minat',
-                'Komunitas',
             ];
 
             $metafields = MetafieldUser::orderBy('field')->get();
@@ -55,8 +52,6 @@ class UserExportController extends Controller
             $writer->addHeader(array_merge($baseHeaders, $metafieldHeaders));
 
             $usersValid = User::query()
-                ->when($request['village_id'], fn($q, $f) => $q->where('village_id', $f))
-                ->when($request['group_id'], fn($q, $f) => $q->where('group_id', $f))
                 ->when($request['age_category_id'], fn($q, $f) => $q->where('age_category_id', $f))
                 ->when($request['kelamin'], fn($q, $f) => $q->where('kelamin', $f))
                 ->when($request['interest_id'], fn($q, $f) => $q->where('interest_id', $f))
@@ -64,12 +59,9 @@ class UserExportController extends Controller
 
             $relations = [
                 'zone',
-                'village',
-                'group',
                 'work',
                 'interest',
                 'subInterest',
-                'communities',
                 'baseMetafieldUsers',
                 'baseMetafieldUsers.metafieldUser',
             ];
@@ -82,16 +74,6 @@ class UserExportController extends Controller
                 $users = $usersValid->with($relations)
                     ->where('role', 'USER')
                     ->where('zone_id', $this->authData->zoneAdmin->id)
-                    ->get();
-            } elseif ($this->authData->role === "ADMIN_DESA") {
-                $users = $usersValid->with($relations)
-                    ->where('role', 'USER')
-                    ->where('village_id', $this->authData->villageAdmin->id)
-                    ->get();
-            } else { // ADMIN_KELOMPOK
-                $users = $usersValid->with($relations)
-                    ->where('role', 'USER')
-                    ->where('group_id', $this->authData->groupAdmin->id)
                     ->get();
             }
 
@@ -116,12 +98,9 @@ class UserExportController extends Controller
                 $row['Password'] = $user->hint_password;
                 $row['Status Kawin'] = $user->status_kawin ?? '';
                 $row['Daerah'] = $user->zone->nama ?? '';
-                $row['Desa'] = $user->village->nama ?? '';
-                $row['Kelompok'] = $user->group->nama ?? '';
                 $row['Pekerjaan'] = $user->work->nama ?? '';
                 $row['Minat'] = $user->interest->nama ?? '';
                 $row['Sub minat'] = $user->subInterest->nama ?? '';
-                $row['Komunitas'] = $user->communities->pluck('nama')->implode(', ') ?? '';
 
                 // --- metafield value ---
                 foreach ($user->baseMetafieldUsers as $mfValue) {
@@ -138,7 +117,7 @@ class UserExportController extends Controller
 
     public function exportUserSingle($id)
     {
-        $user = User::where('id', $id)->with(['zone', 'village', 'group', 'work', 'interest', 'subInterest', 'communities', 'baseMetafieldUsers', 'baseMetafieldUsers.metafieldUser', 'level', 'level.metafieldLevels'])->first();
+        $user = User::where('id', $id)->with(['zone', 'work', 'interest', 'subInterest', 'baseMetafieldUsers', 'baseMetafieldUsers.metafieldUser', 'level', 'level.metafieldLevels'])->first();
 
         $pdf = PDF::loadView('export.pdf.user', [
             'user' => $user

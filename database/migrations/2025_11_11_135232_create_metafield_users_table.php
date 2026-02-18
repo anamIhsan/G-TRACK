@@ -15,8 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('field');
             $table->enum('type', ['STRING', 'ENUM'])->default('STRING');
-            $table->json('enum_values')->nullable(); // [""]
-            $table->foreignUuid('zone_id')->nullable();
+            $table->json('enum_values')->nullable();
             $table->timestamps();
         });
     }

@@ -5,8 +5,6 @@ use App\Http\Controllers\Api\PresenceController;
 use App\Http\Controllers\Api\WhatsappController;
 use App\Models\BaseMetafieldUser;
 use Illuminate\Support\Facades\Route;
-use App\Models\Village;
-use App\Models\Group;
 use App\Models\Interest;
 use App\Models\MetafieldUser;
 use App\Models\SubInterest;
@@ -19,13 +17,6 @@ $prefix = 'api';
 
 Route::prefix($prefix)->name('api.')->group(function () {
     Route::put('users/reason/{id}', [ApiController::class, 'reason_deleted'])->name('users.reason_deleted');
-    Route::get('/get-villages/{zone_id}', function ($zone_id) {
-        return Village::where('zone_id', $zone_id)->get();
-    });
-
-    Route::get('/get-groups/{village_id}', function ($village_id) {
-        return Group::where('village_id', $village_id)->get();
-    });
 
     Route::get('/test/notif', [WhatsappController::class, 'testNotif'])->name('test.notif');
     Route::get('/test/notif/browser', [WhatsappController::class, 'testNotifBrowser'])->name('test.notif.browser');
@@ -77,9 +68,5 @@ Route::prefix($prefix)->name('api.')->group(function () {
                 $metafield->value = $value;
                 return $metafield;
             });
-    });
-
-    Route::get('/get-communities-by-zone/{zone}', function ($zone_id) {
-        return \App\Models\Community::where('zone_id', $zone_id)->get();
     });
 });

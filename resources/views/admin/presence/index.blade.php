@@ -46,12 +46,6 @@
                                             <h5 class="text-xs font-light text-gray-500 dark:text-white/90">
                                                 Daerah : {{ $activity->zone->nama ?? 'Daerah tidak diatur' }}
                                             </h5>
-                                            <h5 class="text-xs font-light text-gray-500 dark:text-white/90">
-                                                Desa : {{ $activity->village->nama ?? 'Desa tidak diatur' }}
-                                            </h5>
-                                            <h5 class="text-xs font-light text-gray-500 dark:text-white/90">
-                                                Kelompok : {{ $activity->group->nama ?? 'Desa tidak diatur' }}
-                                            </h5>
                                         </div>
                                     </div>
                                 @endisset

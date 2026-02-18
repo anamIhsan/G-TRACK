@@ -21,9 +21,11 @@ class ZoneSeeder extends Seeder
         User::where('role', 'ADMIN_DAERAH')->delete();
 
         $zones = [
-            'Zona Barat',
-            'Zona Tengah',
-            'Zona Timur',
+            'Jakarta Pusat',
+            'Jakarta Utara',
+            'Jakarta Barat',
+            'Jakarta Timur',
+            'Jakarta Selatan',
         ];
 
         foreach ($zones as $namaZone) {
